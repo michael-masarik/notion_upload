@@ -1,0 +1,22 @@
+[project]
+name = "notion_upload"
+version = "0.1.0"
+description = "A simple library that handles uploading files to Notion"
+authors = [{ name = "Michael Masarik", email = "masarikfamilymichael@gmail.com" }]
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.8"
+
+dependencies = [
+    "requests"
+]
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]

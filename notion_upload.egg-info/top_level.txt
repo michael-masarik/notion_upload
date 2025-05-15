@@ -1,0 +1,4 @@
+dist
+notion_upload
+tests
+venv

@@ -1,0 +1,10 @@
+LICENSE
+pyproject.toml
+notion_upload/__init__.py
+notion_upload/core.py
+notion_upload.egg-info/PKG-INFO
+notion_upload.egg-info/SOURCES.txt
+notion_upload.egg-info/dependency_links.txt
+notion_upload.egg-info/requires.txt
+notion_upload.egg-info/top_level.txt
+tests/test_core.py
