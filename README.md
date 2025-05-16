@@ -5,6 +5,7 @@
 ![GitHub forks](https://img.shields.io/github/forks/michael-masarik/notion_upload?style=social)
 ![GitHub Repo stars](https://img.shields.io/github/stars/michael-masarik/notion_upload?style=social)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/michael-masarik/notion_upload)
+[![PyPI version](https://img.shields.io/pypi/v/notion-upload.svg)](https://pypi.org/project/notion-upload/)
 
 # notion_upload
 
