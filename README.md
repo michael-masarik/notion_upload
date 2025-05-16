@@ -4,6 +4,7 @@
 ![Python](https://img.shields.io/badge/python-3.8%2B-blue)
 ![GitHub forks](https://img.shields.io/github/forks/michael-masarik/notion_upload?style=social)
 ![GitHub Repo stars](https://img.shields.io/github/stars/michael-masarik/notion_upload?style=social)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/michael-masarik/notion_upload)
 
 # notion_upload
 
