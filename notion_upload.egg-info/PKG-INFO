@@ -1,12 +1,17 @@
 Metadata-Version: 2.4
 Name: notion_upload
-Version: 1.0.0
+Version: 1.0.1
 Summary: A simple library that handles uploading files to Notion
 Author-email: Michael Masarik <masarikfamilymichael@gmail.com>
 License: MIT
 Project-URL: Homepage, https://github.com/michael-masarik/notion_upload
 Project-URL: Repository, https://github.com/michael-masarik/notion_upload
 Project-URL: Issues, https://github.com/michael-masarik/notion_upload/issues
+Keywords: notion,upload,api,python
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Software Development :: Libraries
 Requires-Python: >=3.8
 Description-Content-Type: text/markdown
 License-File: LICENSE
@@ -20,6 +25,7 @@ Dynamic: license-file
 ![GitHub forks](https://img.shields.io/github/forks/michael-masarik/notion_upload?style=social)
 ![GitHub Repo stars](https://img.shields.io/github/stars/michael-masarik/notion_upload?style=social)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/michael-masarik/notion_upload)
+[![PyPI version](https://img.shields.io/pypi/v/notion-upload.svg)](https://pypi.org/project/notion-upload/)
 
 # notion_upload
 
@@ -59,7 +65,7 @@ pip install -r requirements.txt
 ### Example
 
 ```python
-from notion_upload.core import notion_upload
+from notion_upload import notion_upload
 
 NOTION_KEY = "your_notion_api_key"
 
