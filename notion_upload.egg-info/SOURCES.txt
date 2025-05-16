@@ -1,4 +1,5 @@
 LICENSE
+README.md
 pyproject.toml
 notion_upload/__init__.py
 notion_upload/core.py

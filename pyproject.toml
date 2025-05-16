@@ -11,6 +11,11 @@ dependencies = [
     "requests"
 ]
 
+[project.urls]
+Homepage = "https://github.com/michael-masarik/notion_upload"
+Repository = "https://github.com/michael-masarik/notion_upload"
+Issues = "https://github.com/michael-masarik/notion_upload/issues"
+
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
