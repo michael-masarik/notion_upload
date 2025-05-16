@@ -4,12 +4,11 @@ version = "1.0.1"
 description = "A simple library that handles uploading files to Notion"
 authors = [{ name = "Michael Masarik", email = "masarikfamilymichael@gmail.com" }]
 readme = "README.md"
-license = { text = "MIT" }
+license = "MIT"
 requires-python = ">=3.8"
 keywords = ["notion", "upload", "api", "python"]
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Topic :: Software Development :: Libraries",
 ]
