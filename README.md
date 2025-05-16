@@ -44,7 +44,7 @@ pip install -r requirements.txt
 ### Example
 
 ```python
-from notion_upload.core import notion_upload
+from notion_upload import notion_upload
 
 NOTION_KEY = "your_notion_api_key"
 
