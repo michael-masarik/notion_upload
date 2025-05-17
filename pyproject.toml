@@ -17,6 +17,11 @@ dependencies = [
     "requests"
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pytest"
+]
+
 [project.urls]
 Homepage = "https://github.com/michael-masarik/notion_upload"
 Repository = "https://github.com/michael-masarik/notion_upload"
