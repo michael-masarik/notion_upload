@@ -19,3 +19,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Notes
 
 * Multi-part upload is not included in this release due to Notion's free plan limitations.
+
+## \[1.0.1] - 2025-05-16
+
+### Added
+* Minor changes to meta-data
+
+## \[1.0.2] - 2025-05-17
+
+### Added
+* Added test files
+
+### Notes
+* Multi-part upload is not included in this release due to Notion's free plan limitations.
