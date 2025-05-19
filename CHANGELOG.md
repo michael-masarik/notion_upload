@@ -5,7 +5,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## \[1.0.0] - 2025-05-16
+## [1.1.0] - 2025-05-19
+
+### Added
+- Optional file size enforcement for uploads (enabled by default, max 5MB).
+- New `enforce_max_size` parameter for `notion_upload`, `internal_upload`, and `external_upload`.
+- Custom `FileTooLargeError` raised if file exceeds limit.
+- Remote file size is checked via `Content-Length` header before download when available.
+
+### Changed
+- External uploads now perform a HEAD request before download (if size check is enabled).
+
+### Notes
+- The default 5MB file limit reflects Notion's current upload limit.
+- You can disable this check by passing `enforce_max_size=False`.
+
+
+## [1.0.2] - 2025-05-17
+
+### Added
+* Added test files
+
+### Notes
+* Multi-part upload is not included in this release due to Notion's free plan limitations.
+
+
+
+## [1.0.1] - 2025-05-16
+
+### Added
+* Minor changes to meta-data
+
+### Notes
+* Multi-part upload is not included in this release due to Notion's free plan limitations.
+
+## [1.0.0] - 2025-05-16
 
 ### Added
 
@@ -18,17 +52,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Notes
 
-* Multi-part upload is not included in this release due to Notion's free plan limitations.
-
-## \[1.0.1] - 2025-05-16
-
-### Added
-* Minor changes to meta-data
-
-## \[1.0.2] - 2025-05-17
-
-### Added
-* Added test files
-
-### Notes
 * Multi-part upload is not included in this release due to Notion's free plan limitations.

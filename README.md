@@ -18,6 +18,7 @@ A lightweight Python utility to upload files—both local and remote—to Notion
 * 📁 MIME type validation
 * ❌ Basic error checking and reporting
 * 🔒 Uses Bearer token authentication
+* 📦 Optional 5MB file size enforcement (enabled by default)
 
 
 
@@ -54,6 +55,9 @@ notion_upload("path/to/file.pdf", "file.pdf", NOTION_KEY).upload()
 
 # Upload a file from a URL
 notion_upload("https://example.com/image.jpg", "image.jpg", NOTION_KEY).upload()
+
+# Upload with file size check disabled
+notion_upload("path/to/large_file.zip", "large_file.zip", NOTION_KEY, enforce_max_size=False).upload()
 ```
 
 
@@ -68,6 +72,7 @@ Supported file types depend on the Notion API. Common formats like PDFs, images,
 
 * Ensures a Notion API key is provided
 * Validates that the file extension matches the inferred MIME type
+* Optionally enforces Notion's 5MB upload limit (can be disabled)
 * Prints clear, user-friendly errors on failure
 
 
@@ -76,6 +81,7 @@ Supported file types depend on the Notion API. Common formats like PDFs, images,
 
 * For external uploads, the file is downloaded temporarily and deleted after the upload
 * Make sure your Notion integration has appropriate permissions for file uploads
+* By default, files larger than 5MB will raise an error. To override this, pass `enforce_max_size=False`.
 
 
 

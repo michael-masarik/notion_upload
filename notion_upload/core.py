@@ -3,15 +3,25 @@ import requests # type: ignore
 import pprint
 import os
 import re
+class FileTooLargeError(Exception):
+    pass
 n_upload_url = "https://api.notion.com/v1/file_uploads"
 
 class base_upload:
-    def __init__(self, file_path, file_name, api_key):
+    def __init__(self, file_path, file_name, api_key, enforce_max_size=True):
         self.file_path = file_path
         self.file_name = file_name
         self.api_key = api_key
+        self.enforce_max_size = enforce_max_size
         self.mime_type = mimetypes.guess_type(file_path)[0] or 'application/octet-stream'
     def validate(self):
+        if self.enforce_max_size and os.path.isfile(self.file_path):
+            max_bytes = 5 * 1024 * 1024  # 5MB
+            file_size = os.path.getsize(self.file_path)
+            if file_size > max_bytes:
+                raise FileTooLargeError(
+                    f"File '{self.file_path}' is {file_size / (1024 * 1024):.2f}MB, which exceeds the 5MB Notion limit."
+                )
         errors = []
 
         if self.api_key == "your_notion_key":
@@ -31,8 +41,8 @@ class base_upload:
         return True
 
 class internal_upload(base_upload):
-    def __init__(self, file_path, file_name, api_key):
-        super().__init__(file_path, file_name, api_key)
+    def __init__(self, file_path, file_name, api_key, enforce_max_size=True):
+        super().__init__(file_path, file_name, api_key, enforce_max_size)
     def singleUpload(self):
         """
         Upload a single file to Notion.
@@ -84,8 +94,8 @@ class internal_upload(base_upload):
 
 
 class external_upload(base_upload):
-    def __init__(self, file_path, file_name, api_key):
-        super().__init__(file_path, file_name, api_key)
+    def __init__(self, file_path, file_name, api_key, enforce_max_size=True):
+        super().__init__(file_path, file_name, api_key, enforce_max_size)
     def singleUpload(self):
         """
         Upload a single file to Notion.
@@ -116,6 +126,13 @@ class external_upload(base_upload):
         # Download the file from the URL       
         file_url = self.file_path
         try:
+            if self.enforce_max_size:
+                head_resp = requests.head(file_url)
+                content_length = head_resp.headers.get("Content-Length")
+                if content_length and int(content_length) > 5 * 1024 * 1024:
+                    raise FileTooLargeError(
+                        f"File at URL '{file_url}' is {int(content_length) / (1024 * 1024):.2f}MB, which exceeds the 5MB Notion limit."
+                    )
             response = requests.get(file_url, stream=True)
             if response.status_code == 200:
                 temp_file_path = f"temp_{self.file_name}"
@@ -146,13 +163,14 @@ class external_upload(base_upload):
             print("Failed to download the file due to a network error:", e)
 
 class notion_upload:
-    def __init__(self, file_path, file_name, api_key):
+    def __init__(self, file_path, file_name, api_key, enforce_max_size=True):
         self.file_path = file_path
         self.file_name = file_name
         self.api_key = api_key
+        self.enforce_max_size = enforce_max_size
         self.mime_type = mimetypes.guess_type(file_path)[0] or 'application/octet-stream'
     def upload(self):
         if re.match(r'^(http|https)://', self.file_path):
-            external_upload(self.file_path, self.file_name, self.api_key).singleUpload()
+            external_upload(self.file_path, self.file_name, self.api_key, self.enforce_max_size).singleUpload()
         else:
-            internal_upload(self.file_path, self.file_name, self.api_key).singleUpload()
+            internal_upload(self.file_path, self.file_name, self.api_key, self.enforce_max_size).singleUpload()
