@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: notion_upload
-Version: 1.0.2
+Version: 1.1.0
 Summary: A simple library that handles uploading files to Notion
 Author-email: Michael Masarik <masarikfamilymichael@gmail.com>
 License-Expression: MIT
