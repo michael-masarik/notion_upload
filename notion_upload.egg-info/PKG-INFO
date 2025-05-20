@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: notion_upload
-Version: 1.1.0
+Version: 1.2.0
 Summary: A simple library that handles uploading files to Notion
 Author-email: Michael Masarik <masarikfamilymichael@gmail.com>
 License-Expression: MIT
@@ -30,7 +30,7 @@ Dynamic: license-file
 
 # notion_upload
 
-A lightweight Python utility to upload files—both local and remote—to Notion via the [Notion API](https://developers.notion.com/). Supports internal (local) and external (URL-based) file uploads.
+A lightweight Python utility to upload files—both local and remote—to Notion via the [Notion API](https://developers.notion.com/). Supports internal (local) and external (URL-based) file uploads, with added support for bulk uploading multiple files at once.
 
 ## Features
 
@@ -40,8 +40,8 @@ A lightweight Python utility to upload files—both local and remote—to Notion
 * ❌ Basic error checking and reporting
 * 🔒 Uses Bearer token authentication
 * 📦 Optional 5MB file size enforcement (enabled by default)
-
-
+* 📤 Bulk upload multiple files in a single call
+* 📋 Returns Notion file IDs for uploaded files
 
 ## Installation
 
@@ -60,11 +60,9 @@ pip install -r requirements.txt
 
 > The only external dependency is `requests`.
 
-
-
 ## Usage
 
-### Example
+### Single File Upload Example
 
 ```python
 from notion_upload import notion_upload
@@ -72,22 +70,40 @@ from notion_upload import notion_upload
 NOTION_KEY = "your_notion_api_key"
 
 # Upload a local file
-notion_upload("path/to/file.pdf", "file.pdf", NOTION_KEY).upload()
+file_id = notion_upload("path/to/file.pdf", "file.pdf", NOTION_KEY).upload()
+print(f"Uploaded file ID: {file_id}")
 
 # Upload a file from a URL
-notion_upload("https://example.com/image.jpg", "image.jpg", NOTION_KEY).upload()
+file_id = notion_upload("https://example.com/image.jpg", "image.jpg", NOTION_KEY).upload()
+print(f"Uploaded file ID: {file_id}")
 
 # Upload with file size check disabled
-notion_upload("path/to/large_file.zip", "large_file.zip", NOTION_KEY, enforce_max_size=False).upload()
+file_id = notion_upload("path/to/large_file.zip", "large_file.zip", NOTION_KEY, enforce_max_size=False).upload()
+print(f"Uploaded file ID: {file_id}")
 ```
 
+### Bulk Upload Example
 
+```python
+from notion_upload import bulk_upload
+
+NOTION_KEY = "your_notion_api_key"
+
+files_to_upload =  {
+    "files": [
+        {"path": "path/to/file1.pdf", "name": "file1.pdf"},
+        {"path": "https://example.com/image2.jpg", "name": "image2.jpg"},
+        {"path": "path/to/file3.docx", "name": "file3.docx"}
+    ]
+}
+
+uploaded_file_ids = bulk_upload.upload(files_to_upload, NOTION_KEY)
+print("Uploaded file IDs:", uploaded_file_ids)
+```
 
 ## File Types
 
 Supported file types depend on the Notion API. Common formats like PDFs, images, and documents should work. Python’s built-in `mimetypes` module is used to infer MIME types.
-
-
 
 ## Validation
 
@@ -96,29 +112,21 @@ Supported file types depend on the Notion API. Common formats like PDFs, images,
 * Optionally enforces Notion's 5MB upload limit (can be disabled)
 * Prints clear, user-friendly errors on failure
 
-
-
 ## Notes
 
 * For external uploads, the file is downloaded temporarily and deleted after the upload
 * Make sure your Notion integration has appropriate permissions for file uploads
 * By default, files larger than 5MB will raise an error. To override this, pass `enforce_max_size=False`.
-
-
+* Bulk uploads return a list of Notion file IDs corresponding to each uploaded file.
 
 ## License
 
 MIT License
 
-
-
 ## Contributing
 
 Contributions are welcome! Feel free to fork the repo, submit pull requests, or open issues. See version notes below.
 
-
-
 ## Version Notes
 
-Currently, `notion_upload` only supports single-part uploads due to limitations of the free [Notion plan](https://www.notion.com/pricing).
-If you have access to a Business or Enterprise plan, feel free to contribute to the multi-part file upload!
+Currently, `notion_upload` supports single-part uploads and bulk upload of multiple files due to limitations of the free [Notion plan](https://www.notion.com/pricing). If you have access to a Business or Enterprise plan, feel free to contribute to the multi-part file upload!
