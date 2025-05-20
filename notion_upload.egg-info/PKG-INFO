@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: notion_upload
-Version: 1.2.0
+Version: 1.2.1
 Summary: A simple library that handles uploading files to Notion
 Author-email: Michael Masarik <masarikfamilymichael@gmail.com>
 License-Expression: MIT
@@ -69,17 +69,21 @@ from notion_upload import notion_upload
 
 NOTION_KEY = "your_notion_api_key"
 
-# Upload a local file
-file_id = notion_upload("path/to/file.pdf", "file.pdf", NOTION_KEY).upload()
-print(f"Uploaded file ID: {file_id}")
+#Internal
+def internal_upload():
+    uploader = notion_upload("internal.jpg","internal.jpg", NOTION_KEY)
+    uploaded_file_ids = uploader.upload()
+    print("Uploaded file IDs:", uploaded_file_ids)
 
-# Upload a file from a URL
-file_id = notion_upload("https://example.com/image.jpg", "image.jpg", NOTION_KEY).upload()
-print(f"Uploaded file ID: {file_id}")
+internal = internal_upload()
 
-# Upload with file size check disabled
-file_id = notion_upload("path/to/large_file.zip", "large_file.zip", NOTION_KEY, enforce_max_size=False).upload()
-print(f"Uploaded file ID: {file_id}")
+#External
+def external_upload():
+    uploader = notion_upload("https://example.com/image.png","external.png", NOTION_KEY)
+    uploaded_file_ids = uploader.upload()
+    print("Uploaded file IDs:", uploaded_file_ids)
+
+external = external_upload()
 ```
 
 ### Bulk Upload Example
@@ -89,16 +93,27 @@ from notion_upload import bulk_upload
 
 NOTION_KEY = "your_notion_api_key"
 
-files_to_upload =  {
-    "files": [
-        {"path": "path/to/file1.pdf", "name": "file1.pdf"},
-        {"path": "https://example.com/image2.jpg", "name": "image2.jpg"},
-        {"path": "path/to/file3.docx", "name": "file3.docx"}
-    ]
-}
+def test_bulk_upload():
+    
 
-uploaded_file_ids = bulk_upload.upload(files_to_upload, NOTION_KEY)
-print("Uploaded file IDs:", uploaded_file_ids)
+    files_to_upload = {
+        "files": [
+            {
+                "path": "internal.jpg",
+                "name": "internal.jpg"
+            },
+            {
+                "path": "https://example.com/image.png",
+                "name": "external.png"
+            }
+        ]
+    }
+
+    uploader = bulk_upload(files_to_upload, NOTION_KEY)
+    uploaded_file_ids = uploader.upload()
+    print("Uploaded file IDs:", uploaded_file_ids)
+
+test = test_bulk_upload()
 ```
 
 ## File Types
