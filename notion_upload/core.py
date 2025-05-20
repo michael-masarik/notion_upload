@@ -1,8 +1,8 @@
 import mimetypes
 import requests # type: ignore
-import pprint
 import os
 import re
+import tempfile
 class FileTooLargeError(Exception):
     pass
 n_upload_url = "https://api.notion.com/v1/file_uploads"
@@ -40,16 +40,7 @@ class base_upload:
             return False
         return True
 
-class internal_upload(base_upload):
-    def __init__(self, file_path, file_name, api_key, enforce_max_size=True):
-        super().__init__(file_path, file_name, api_key, enforce_max_size)
-    def singleUpload(self):
-        """
-        Upload a single file to Notion.
-        """
-        if not self.validate():
-            return
-        # Start the upload
+    def initiate_upload(self):
         payload = {
             "filename": self.file_name,
             "content_type": self.mime_type
@@ -61,14 +52,31 @@ class internal_upload(base_upload):
             "Notion-Version": "2022-06-28"
         }
 
-        response = requests.post(n_upload_url, json=payload, headers=headers)
+        try:
+            response = requests.post(n_upload_url, json=payload, headers=headers, timeout=10)
+            if response.status_code == 200:
+                file_id = response.json().get("id")
+                print("Upload successfully started! File ID: " + file_id)
+                return file_id
+            else:
+                print("Upload failed:", response.status_code, response.text)
+                return None
+        except requests.RequestException as e:
+            print("Upload failed due to a network error:", e)
+            return None
 
-        if response.status_code == 200:
-            file_id = response.json().get("id")
-            print("Upload successfuly started! File ID: " + file_id)
-        else:
-            print("Upload failed:", response.status_code, response.text)
-            file_id = None
+class internal_upload(base_upload):
+    def __init__(self, file_path, file_name, api_key, enforce_max_size=True):
+        super().__init__(file_path, file_name, api_key, enforce_max_size)
+    def singleUpload(self):
+        """
+        Upload a single file to Notion.
+        """
+        if not self.validate():
+            return None
+        file_id = self.initiate_upload()
+        if file_id is None:
+            return None
 
         if file_id is not None:
             try:
@@ -83,14 +91,15 @@ class internal_upload(base_upload):
                         "Notion-Version": "2022-06-28"
                     }
 
-                    response = requests.post(upload_url, headers=headers, files=files)
+                    response = requests.post(upload_url, headers=headers, files=files, timeout=10)
 
                     if response.status_code == 200:
-                        print("Upload successful! File ID: " + file_id)
+                        print("Upload successfully started! File ID: " + file_id)
                     else:
                         print("Upload failed at file send stage:", response.status_code, response.text)
             except FileNotFoundError:
                 print(f"File not found: {self.file_path}")
+        return file_id
 
 
 class external_upload(base_upload):
@@ -101,44 +110,27 @@ class external_upload(base_upload):
         Upload a single file to Notion.
         """
         if not self.validate():
-            return
-        #Start the upload
-        payload = {
-                "filename": self.file_name,  
-                "content_type": self.mime_type
-            }    
-        headers = {
-                "accept": "application/json",
-                "content-type": "application/json",
-                "Authorization": f"Bearer {self.api_key}",
-                "Notion-Version": "2022-06-28"
-            }
-
-        response = requests.post(n_upload_url, json=payload, headers=headers)
-
-        if response.status_code == 200:
-            file_id = response.json().get("id")
-            print("Upload successfuly started! File ID: " + file_id)
-        else:
-            print("Upload failed:", response.status_code, response.text)
-            file_id = None
+            return None
+        file_id = self.initiate_upload()
+        if file_id is None:
+            return None
 
         # Download the file from the URL       
         file_url = self.file_path
         try:
             if self.enforce_max_size:
-                head_resp = requests.head(file_url)
+                head_resp = requests.head(file_url, timeout=10)
                 content_length = head_resp.headers.get("Content-Length")
                 if content_length and int(content_length) > 5 * 1024 * 1024:
                     raise FileTooLargeError(
                         f"File at URL '{file_url}' is {int(content_length) / (1024 * 1024):.2f}MB, which exceeds the 5MB Notion limit."
                     )
-            response = requests.get(file_url, stream=True)
+            response = requests.get(file_url, stream=True, timeout=10)
             if response.status_code == 200:
-                temp_file_path = f"temp_{self.file_name}"
-                with open(temp_file_path, "wb") as f:
+                with tempfile.NamedTemporaryFile(delete=False) as temp_file:
                     for chunk in response.iter_content(1024):
-                        f.write(chunk)
+                        temp_file.write(chunk)
+                    temp_file_path = temp_file.name
 
                 with open(temp_file_path, "rb") as f:
                     files = {
@@ -151,16 +143,19 @@ class external_upload(base_upload):
                         "Notion-Version": "2022-06-28"
                     }
 
-                    response = requests.post(url, headers=headers, files=files)
-                    pprint.pprint(response.json())
+                    response = requests.post(url, headers=headers, files=files, timeout=10)
 
-                # Delete the temporary file
+                    print(response.json())
+
                 if os.path.exists(temp_file_path):
                     os.remove(temp_file_path)
             else:
                 print("Failed to download the file:", response.status_code)
         except requests.RequestException as e:
             print("Failed to download the file due to a network error:", e)
+        return file_id
+
+
 
 class notion_upload:
     def __init__(self, file_path, file_name, api_key, enforce_max_size=True):
@@ -171,6 +166,44 @@ class notion_upload:
         self.mime_type = mimetypes.guess_type(file_path)[0] or 'application/octet-stream'
     def upload(self):
         if re.match(r'^(http|https)://', self.file_path):
-            external_upload(self.file_path, self.file_name, self.api_key, self.enforce_max_size).singleUpload()
+            return external_upload(self.file_path, self.file_name, self.api_key, self.enforce_max_size).singleUpload()
         else:
-            internal_upload(self.file_path, self.file_name, self.api_key, self.enforce_max_size).singleUpload()
+            return internal_upload(self.file_path, self.file_name, self.api_key, self.enforce_max_size).singleUpload()
+
+class bulk_upload:
+    def __init__(self, file_json, api_key, enforce_max_size=True):
+        self.file_json = file_json
+        self.api_key = api_key
+        self.enforce_max_size = enforce_max_size
+    
+    #file_json = {
+    #        "files": [
+    #           {"path": "file/path", "name": "name.txt"},
+    #            {"path": "file/path2", "name": "name2.txt"}
+    #        ]
+    #   }
+    #This is the format of the file_json that you need to pass to the bulk_upload class.
+
+    def upload(self):
+        file_ids = []
+        try:
+            files = self.file_json.get("files", [])
+            if not isinstance(files, list):
+                raise ValueError("Invalid format: 'files' should be a list.")
+        except Exception as e:
+            print("Invalid JSON structure:", e)
+            return file_ids
+
+        for file_entry in files:
+            file_path = file_entry.get("path")
+            file_name = file_entry.get("name")
+
+            if not file_path or not file_name:
+                print("Skipping entry due to missing path or name:", file_entry)
+                continue
+
+            uploader = notion_upload(file_path, file_name, self.api_key, self.enforce_max_size)
+            file_id = uploader.upload()
+            if file_id:
+                file_ids.append(file_id)
+        return file_ids
