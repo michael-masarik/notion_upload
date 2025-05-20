@@ -76,7 +76,7 @@ files_to_upload =  {
     ]
 }
 
-uploaded_file_ids = bulk_upload.upload(files_to_upload, NOTION_KEY)
+uploaded_file_ids = bulk_upload(files_to_upload, NOTION_KEY)
 print("Uploaded file IDs:", uploaded_file_ids)
 ```
 
