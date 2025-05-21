@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [1.3.1] - 2025-05-21
+### Changed 
+- Improved logging
+### Added
+- Support Checking for MIME types. To view supported MIME types, [click here](notion_upload/mime_types.json)
 ## [1.2.1] - 2025-05-19
 ### Changed
 - Changed typo in README.md

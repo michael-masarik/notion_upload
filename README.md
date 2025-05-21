@@ -97,12 +97,13 @@ test = test_bulk_upload()
 
 ## File Types
 
-Supported file types depend on the Notion API. Common formats like PDFs, images, and documents should work. Python’s built-in `mimetypes` module is used to infer MIME types.
+Supported file types depend on the Notion API. Common formats like PDFs, images, and documents should work. Python’s built-in `mimetypes` module is used to infer MIME types. To see which file types are allowed, view the `mime_types.json` file. 
 
 ## Validation
 
 * Ensures a Notion API key is provided
 * Validates that the file extension matches the inferred MIME type
+* Validates that the MIME type is the supported in Notion
 * Optionally enforces Notion's 5MB upload limit (can be disabled)
 * Prints clear, user-friendly errors on failure
 
