@@ -1,0 +1,13 @@
+PACKAGE = notion_upload
+VERSION = $(shell python3 -c "import setuptools.config; print(setuptools.config.read_configuration('pyproject.toml')['project']['version'])")
+
+clean:
+	rm -rf dist build *.egg-info
+
+build: clean
+	python3 -m build
+
+check:
+	tar -tzf dist/$(PACKAGE)-$(VERSION).tar.gz | grep mime_types.json || echo "⚠️  mime_types.json not found in source tarball"
+
+release: build check
