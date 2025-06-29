@@ -23,20 +23,10 @@ A lightweight Python utility to upload files—both local and remote—to Notion
 * 📋 Returns Notion file IDs for uploaded files
 
 ## Installation
-
-Clone the repo:
-
+Install the package
 ```bash
-git clone https://github.com/michael-masarik/notion_upload.git
-cd notion_upload
+pip install notion-upload
 ```
-
-Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
 > The only external dependency is `requests`.
 
 ## Usage
