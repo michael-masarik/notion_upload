@@ -1,11 +1,3 @@
-![License](https://img.shields.io/github/license/michael-masarik/notion_upload)
-![Last Commit](https://img.shields.io/github/last-commit/michael-masarik/notion_upload)
-![Issues](https://img.shields.io/github/issues/michael-masarik/notion_upload)
-![Python](https://img.shields.io/badge/python-3.8%2B-blue)
-![GitHub forks](https://img.shields.io/github/forks/michael-masarik/notion_upload?style=social)
-![GitHub Repo stars](https://img.shields.io/github/stars/michael-masarik/notion_upload?style=social)
-[![PyPI version](https://img.shields.io/pypi/v/notion-upload.svg)](https://pypi.org/project/notion-upload/)
-
 # notion_upload
 
 A lightweight Python utility to upload files—both local and remote—to Notion via the [Notion API](https://developers.notion.com/). Supports internal (local) and external (URL-based) file uploads, with added support for bulk uploading multiple files at once.

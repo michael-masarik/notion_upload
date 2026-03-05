@@ -7,3 +7,4 @@ Icon\?
 build/
 dist/
 *.egg-info/
+site/

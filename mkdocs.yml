@@ -1,0 +1,4 @@
+site_name: notion-upload
+site_author: Michael Masarik
+repo_url: https://github.com/michael-masarik/notion-upload
+site_description: A lightweight Python utility to upload files—both local and remote—to Notion via the Notion API. Supports internal (local) and external (URL-based) file uploads, with added support for bulk uploading multiple files at once.
