@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="A lightweight Python utility to upload files—both local and remote—to Notion via the Notion API. Supports internal (local) and external (URL-based) file uploads, with added support for bulk uploading multiple files at once.">
+        <meta name="author" content="Michael Masarik">
+        
+        <link rel="shortcut icon" href="img/favicon.ico">
+        <title>notion-upload</title>
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="css/fontawesome.min.css" rel="stylesheet">
+        <link href="css/brands.min.css" rel="stylesheet">
+        <link href="css/solid.min.css" rel="stylesheet">
+        <link href="css/v4-font-face.min.css" rel="stylesheet">
+        <link href="css/base.css" rel="stylesheet">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body class="homepage">
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href=".">notion-upload</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a href="https://github.com/michael-masarik/notion-upload/edit/master/docs/index.md" class="nav-link"><i class="fa-brands fa-github"></i> Edit on GitHub</a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#notion_upload" class="nav-link">notion_upload</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#features" class="nav-link">Features</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#installation" class="nav-link">Installation</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#usage" class="nav-link">Usage</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#file-types" class="nav-link">File Types</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#validation" class="nav-link">Validation</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#notes" class="nav-link">Notes</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#license" class="nav-link">License</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#contributing" class="nav-link">Contributing</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#version-notes" class="nav-link">Version Notes</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="notion_upload">notion_upload</h1>
+<p>A lightweight Python utility to upload files—both local and remote—to Notion via the <a href="https://developers.notion.com/">Notion API</a>. Supports internal (local) and external (URL-based) file uploads, with added support for bulk uploading multiple files at once.</p>
+<h2 id="features">Features</h2>
+<ul>
+<li>✅ Upload local files to Notion</li>
+<li>🌐 Upload files from remote URLs</li>
+<li>📁 MIME type validation</li>
+<li>❌ Basic error checking and reporting</li>
+<li>🔒 Uses Bearer token authentication</li>
+<li>📦 Optional 5MB file size enforcement (enabled by default)</li>
+<li>📤 Bulk upload multiple files in a single call</li>
+<li>📋 Returns Notion file IDs for uploaded files</li>
+</ul>
+<h2 id="installation">Installation</h2>
+<p>Install the package</p>
+<pre><code class="language-bash">pip install notion-upload
+</code></pre>
+<blockquote>
+<p>The only external dependency is <code>requests</code>.</p>
+</blockquote>
+<h2 id="usage">Usage</h2>
+<h3 id="single-file-upload-example">Single File Upload Example</h3>
+<pre><code class="language-python">from notion_upload import notion_upload
+
+NOTION_KEY = &quot;your_notion_api_key&quot;
+
+#Internal
+ uploader = notion_upload(
+    &quot;internal.jpg&quot;,
+    &quot;internal.jpg&quot;, 
+    NOTION_KEY
+ )
+uploaded_file_id = uploader.upload()
+print(&quot;Uploaded file ID:&quot;, uploaded_file_id)
+
+
+#External
+uploader = notion_upload(
+    &quot;https://example.com/image.png&quot;,&quot;external.png&quot;, 
+    NOTION_KEY
+)
+uploaded_file_ids = uploader.upload()
+print(&quot;Uploaded file IDs:&quot;, uploaded_file_ids)
+</code></pre>
+<h3 id="bulk-upload-example">Bulk Upload Example</h3>
+<pre><code class="language-python">from notion_upload import bulk_upload
+
+NOTION_KEY = &quot;your_notion_api_key&quot;
+
+files_to_upload = {
+    &quot;files&quot;: [
+        {
+            &quot;path&quot;: &quot;internal.jpg&quot;,
+            &quot;name&quot;: &quot;internal.jpg&quot;
+        },
+        {
+            &quot;path&quot;: &quot;https://example.com/image.png&quot;,
+            &quot;name&quot;: &quot;external.png&quot;
+        }
+    ]
+}
+
+uploader = bulk_upload(files_to_upload, NOTION_KEY)
+uploaded_file_ids = uploader.upload()
+print(&quot;Uploaded file IDs:&quot;, uploaded_file_ids)
+</code></pre>
+<h2 id="file-types">File Types</h2>
+<p>Supported file types depend on the Notion API. Common formats like PDFs, images, and documents should work. Python’s built-in <code>mimetypes</code> module is used to infer MIME types. To see which file types are allowed, view the <code>mime_types.py</code> file. </p>
+<h2 id="validation">Validation</h2>
+<ul>
+<li>Ensures a Notion API key is provided</li>
+<li>Validates that the file extension matches the inferred MIME type</li>
+<li>Validates that the MIME type is the supported in Notion</li>
+<li>Optionally enforces Notion's 5MB upload limit (can be disabled)</li>
+<li>Prints clear, user-friendly errors on failure</li>
+<li>Throws clear errors on validation issues</li>
+</ul>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>Make sure your Notion integration has appropriate permissions for file uploads</li>
+<li>By default, files larger than 5MB will raise an error. To override this, pass <code>enforce_max_size=False</code>.</li>
+<li><code>enforce_max_size=False</code> does not prevent uploads from failing on files bigger than 5GB (Notion's hard ceiling for file size).</li>
+<li>Bulk uploads return a list of Notion file IDs corresponding to each uploaded file.</li>
+</ul>
+<h2 id="license">License</h2>
+<p>MIT License</p>
+<h2 id="contributing">Contributing</h2>
+<p>Contributions are welcome! Feel free to fork the repo, submit pull requests, or open issues. See version notes below.</p>
+<h2 id="version-notes">Version Notes</h2>
+<p>Currently, <code>notion_upload</code> supports single-part uploads and bulk upload of multiple files due to limitations of the free <a href="https://www.notion.com/pricing">Notion plan</a>. If you have access to a Business or Enterprise plan, feel free to contribute to the multi-part file upload!</p></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = ".",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="js/base.js"></script>
+        <script src="search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>
+
+<!--
+MkDocs version : 1.6.1
+Build Date UTC : 2026-03-05 03:49:05.449429+00:00
+-->
