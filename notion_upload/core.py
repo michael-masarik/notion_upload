@@ -132,6 +132,7 @@ class notion_upload:
         self.fileName = file_name
         self.mimeType = mimetypes.guess_type(file_path)[0] or "application/octet-stream"
         self.apiKey = api_key
+        self.multiPart = False
         self.multiUpload = MultiPartUpload(
             self.apiKey, self.filePath, self.fileName, self.mimeType
         )
@@ -153,9 +154,11 @@ class notion_upload:
                     self.multiPart = True
             else:
                 raise FileNotFoundError(self.filePath)
-        if self.mimeType not in ALLOWED_MIME_TYPES:
+        if self.mimeType not in ALLOWED_MIME_TYPES and self.type == "internal":
             raise InvaildMIME(f"{self.mimeType} is not a support MIME type")
-        if mimetypes.guess_type(self.fileName)[0] != self.mimeType:
+        if (
+            mimetypes.guess_type(self.fileName)[0] != self.mimeType
+        ) and self.type == "internal":
             raise InvaildMIME("File Name extension and MIME type do not match")
 
     def initiate_upload(self, external=False):
@@ -163,6 +166,7 @@ class notion_upload:
         if external:
             payload["mode"] = "external_url"
             payload["external_url"] = self.filePath
+            del payload["content_type"]
         headers = {
             "accept": "application/json",
             "content-type": "application/json",
@@ -217,8 +221,48 @@ class notion_upload:
 
     def upload(self):
         if self.type == "external":
-            return self.initiate_upload()
+            return self.initiate_upload(external=True)
         elif self.multiPart == True:
             return self.multiUpload.upload()
         else:
             return self.singleUpload()
+
+
+class bulk_upload:
+    def __init__(self, files: dict, api_key, enforce_max_size=True):
+        self.files = files.get("files", [])
+        try:
+            if not isinstance(self.files, list):
+                raise ValueError("Invalid format: 'files' should be a list.")
+        except Exception as e:
+            print("🧾 Invalid JSON structure:", e)
+        self.apiKey = api_key
+        self.MaxSize = enforce_max_size
+
+    def upload(self):
+        file_ids = []
+        for file_entry in self.files:
+            file_path = file_entry.get("path")
+            file_name = file_entry.get("name")
+            if not file_path or not file_name:
+                print("⚠️ Skipping entry due to missing path or name:", file_entry)
+                continue
+            uploader = notion_upload(
+                file_path, file_name, self.apiKey, enforce_max_size=self.MaxSize
+            )
+            fileID = uploader.upload()
+            if fileID:
+                file_ids.append(fileID)
+        return file_ids
+
+    def upload_generator(self):
+        for file_entry in self.files:
+            file_path = file_entry.get("path")
+            file_name = file_entry.get("name")
+            if not file_path or not file_name:
+                print("⚠️ Skipping entry due to missing path or name:", file_entry)
+                continue
+            uploader = notion_upload(
+                file_path, file_name, self.apiKey, enforce_max_size=self.MaxSize
+            )
+            yield uploader.upload()
