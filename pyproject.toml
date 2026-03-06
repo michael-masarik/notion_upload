@@ -26,6 +26,8 @@ dev = [
 Homepage = "https://github.com/michael-masarik/notion_upload"
 Repository = "https://github.com/michael-masarik/notion_upload"
 Issues = "https://github.com/michael-masarik/notion_upload/issues"
+Documentation = "https://michael-masarik.github.io/notion_upload/"
+Changelog = "https://michael-masarik.github.io/notion_upload/CHANGELOG"
 
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]

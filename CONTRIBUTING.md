@@ -18,7 +18,7 @@ Check out the [Issues tab](https://github.com/michael-masarik/notion_upload/issu
 2. **Clone your fork**
 
    ```bash
-   git clone https://github.com/michael-masarik/notion_upload.git
+   git clone https://github.com/your-username/notion_upload.git
    cd notion_upload
    ```
 3. **Create a virtual environment**

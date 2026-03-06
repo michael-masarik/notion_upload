@@ -5,7 +5,7 @@
 ![GitHub forks](https://img.shields.io/github/forks/michael-masarik/notion_upload?style=social)
 ![GitHub Repo stars](https://img.shields.io/github/stars/michael-masarik/notion_upload?style=social)
 [![PyPI version](https://img.shields.io/pypi/v/notion-upload.svg)](https://pypi.org/project/notion-upload/)
-
+[![PyPI Downloads](https://static.pepy.tech/personalized-badge/notion-upload?period=total&units=NONE&left_color=GREY&right_color=BLUE&left_text=downloads)](https://pepy.tech/projects/notion-upload)
 # notion_upload
 
 A lightweight Python utility to upload files—both local and remote—to Notion via the [Notion API](https://developers.notion.com/). Supports internal (local) and external (URL-based) file uploads, with added support for bulk uploading multiple files at once.
@@ -20,6 +20,7 @@ A lightweight Python utility to upload files—both local and remote—to Notion
 * 📦 Optional 5MB file size enforcement (enabled by default)
 * 📤 Bulk upload multiple files in a single call
 * 📋 Returns Notion file IDs for uploaded files
+* 🧩 Completely manages multi part file uploads
 
 ## Installation
 Install the package
@@ -79,11 +80,15 @@ files_to_upload = {
 uploader = bulk_upload(files_to_upload, NOTION_KEY)
 uploaded_file_ids = uploader.upload()
 print("Uploaded file IDs:", uploaded_file_ids)
+
+# If you would prefer a generator over a returned list, use upload_generator()
+uploaded_file_ids = uploader.upload_generator()
+print("Uploaded file IDs:", uploaded_file_ids)
 ```
 
 ## File Types
 
-Supported file types depend on the Notion API. Common formats like PDFs, images, and documents should work. Python’s built-in `mimetypes` module is used to infer MIME types. To see which file types are allowed, view the `mime_types.py` file. 
+Supported file types depend on the Notion API. Common formats like PDFs, images, and documents should work. Python’s built-in `mimetypes` module is used to infer MIME types.
 
 ## Validation
 
@@ -92,14 +97,18 @@ Supported file types depend on the Notion API. Common formats like PDFs, images,
 * Validates that the MIME type is the supported in Notion
 * Optionally enforces Notion's 5MB upload limit (can be disabled)
 * Prints clear, user-friendly errors on failure
-* Throws clear errors on validation issues
+* Throws clear errors on validation issues before attempting to upload
 
 ## Notes
 
 * Make sure your Notion integration has appropriate permissions for file uploads
 * By default, files larger than 5MB will raise an error. To override this, pass `enforce_max_size=False`.
-* `enforce_max_size=False` does not prevent uploads from failing on files bigger than 5GB (Notion's hard ceiling for file size).
+* `enforce_max_size=False` does not prevent uploads from being blocked on files bigger than 5GB (Notion's hard ceiling for file size).
 * Bulk uploads return a list of Notion file IDs corresponding to each uploaded file.
+
+## Notion Version
+
+Currenly supports Notion Version `2025-09-03`
 
 ## License
 
@@ -107,8 +116,5 @@ MIT License
 
 ## Contributing
 
-Contributions are welcome! Feel free to fork the repo, submit pull requests, or open issues. See version notes below.
+Contributions are welcome! Feel free to fork the repo, submit pull requests, or open issues.
 
-## Version Notes
-
-Currently, `notion_upload` supports single-part uploads and bulk upload of multiple files due to limitations of the free [Notion plan](https://www.notion.com/pricing). If you have access to a Business or Enterprise plan, feel free to contribute to the multi-part file upload!

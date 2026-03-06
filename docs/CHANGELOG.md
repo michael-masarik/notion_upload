@@ -4,8 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [2.0.0] - 2026-03-06
+### Changed
+Complete rebuild. All imports should work the same, though errors are now thrown on class instantiation instead of upon file upload
+### Added
+- Prevents uploads of files greater than 5GB (Notion's hard ceiling)
+- Files greater than 20 MB will automatically be split and uploaded via multi-part upload.
+- External files are no longer downloaded before being uploaded
+- Updated Notion API version to `2025-09-03`
+
 ## [1.3.2] - 2025-05-21
-## Changed 
+### Changed 
 - Corrected file bug. MIME types file was not included in the build.
 ## [1.3.1] - 2025-05-21
 ### Changed 

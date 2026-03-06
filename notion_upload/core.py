@@ -1,11 +1,10 @@
 """Notion file upload helper.
 
-This module wraps the official Notion file upload API (v1) and provides helpers
+This module wraps the official Notion file upload API and provides helpers
 for single-part, multi-part, and bulk uploads.
 
 It exposes:
 - `notion_upload` for uploading local files or external URLs.
-- `MultiPartUpload` for chunked upload support required by Notion.
 - `bulk_upload` for uploading multiple files in one operation.
 
 The implementation follows Notion's API requirements for `file_uploads`.
@@ -15,7 +14,6 @@ from math import ceil
 import os
 import re
 from typing import BinaryIO
-from mime_types import NOTION_MIME_TYPES as ALLOWED_MIME_TYPES
 import time
 
 import requests
@@ -25,6 +23,64 @@ CHUNK_SIZE = 10 * 1024 * 1024
 NOTION_URL = "https://api.notion.com/v1/file_uploads"
 TIME_FREQUENCY = 3
 PERIOD = 1.0 / TIME_FREQUENCY
+ALLOWED_MIME_TYPES = [
+    "application/pdf",
+    "text/plain",
+    "text/csv",
+    "application/json",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.template",
+    "application/vnd.ms-excel",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.template",
+    "application/vnd.ms-powerpoint",
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    "application/vnd.openxmlformats-officedocument.presentationml.template",
+    "application/rtf",
+    "text/markdown",
+    "text/html",
+    "application/epub+zip",
+    "text/xml",
+    "application/xml",
+    "text/css",
+    "application/vnd.oasis.opendocument.text",
+    "application/vnd.oasis.opendocument.spreadsheet",
+    "application/vnd.oasis.opendocument.presentation",
+    "text/calendar",
+    "text/yaml",
+    "text/tab-separated-values",
+    "application/zip",
+    "application/gzip",
+    "application/x-tar",
+    "application/x-7z-compressed",
+    "application/x-bzip2",
+    "application/vnd.rar",
+    "image/gif",
+    "image/heic",
+    "image/jpeg",
+    "image/png",
+    "image/svg+xml",
+    "image/tiff",
+    "image/webp",
+    "image/vnd.microsoft.icon",
+    "image/bmp",
+    "image/avif",
+    "image/apng",
+    "video/x-amv",
+    "video/x-ms-asf",
+    "video/x-msvideo",
+    "video/x-f4v",
+    "video/x-flv",
+    "video/mp4",
+    "application/mp4",
+    "video/webm",
+    "video/quicktime",
+    "video/mpeg",
+    "video/ogg",
+    "video/3gpp",
+    "video/3gpp2",
+]
 
 
 class FileToLarge(Exception):
