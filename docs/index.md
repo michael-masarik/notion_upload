@@ -73,7 +73,7 @@ uploaded_file_ids = uploader.upload()
 print("Uploaded file IDs:", uploaded_file_ids)
 
 # If you would prefer a generator over a returned list, use upload_generator()
-uploader.upload_generator()
+uploaded_file_ids = uploader.upload_generator()
 print("Uploaded file IDs:", uploaded_file_ids)
 ```
 
