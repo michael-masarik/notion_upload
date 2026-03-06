@@ -71,6 +71,10 @@ files_to_upload = {
 uploader = bulk_upload(files_to_upload, NOTION_KEY)
 uploaded_file_ids = uploader.upload()
 print("Uploaded file IDs:", uploaded_file_ids)
+
+# If you would prefer a generator over a returned list, use upload_generator()
+uploader.upload_generator()
+print("Uploaded file IDs:", uploaded_file_ids)
 ```
 
 ## File Types
@@ -84,7 +88,7 @@ Supported file types depend on the Notion API. Common formats like PDFs, images,
 * Validates that the MIME type is the supported in Notion
 * Optionally enforces Notion's 5MB upload limit (can be disabled)
 * Prints clear, user-friendly errors on failure
-* Throws clear errors on validation issues
+* Throws clear errors on validation issues before attempting to upload
 
 ## Notes
 
@@ -99,8 +103,5 @@ MIT License
 
 ## Contributing
 
-Contributions are welcome! Feel free to fork the repo, submit pull requests, or open issues. See version notes below.
+Contributions are welcome! Feel free to fork the repo, submit pull requests, or open issues.
 
-## Version Notes
-
-Currently, `notion_upload` supports single-part uploads and bulk upload of multiple files due to limitations of the free [Notion plan](https://www.notion.com/pricing). If you have access to a Business or Enterprise plan, feel free to contribute to the multi-part file upload!

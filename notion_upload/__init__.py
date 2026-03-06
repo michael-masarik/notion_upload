@@ -1,1 +1,1 @@
-from .core import notion_upload, MultiPartUpload
+from .core import notion_upload, bulk_upload
