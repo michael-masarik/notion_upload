@@ -1,3 +1,16 @@
+"""Notion file upload helper.
+
+This module wraps the official Notion file upload API (v1) and provides helpers
+for single-part, multi-part, and bulk uploads.
+
+It exposes:
+- `notion_upload` for uploading local files or external URLs.
+- `MultiPartUpload` for chunked upload support required by Notion.
+- `bulk_upload` for uploading multiple files in one operation.
+
+The implementation follows Notion's API requirements for `file_uploads`.
+"""
+
 from math import ceil
 import os
 import re
@@ -15,17 +28,32 @@ PERIOD = 1.0 / TIME_FREQUENCY
 
 
 class FileToLarge(Exception):
-    pass
+    """Raised when a local file exceeds Notion's maximum upload size."""
 
 
 class InvaildMIME(Exception):
-    pass
+    """Raised when a file's MIME type is not supported by Notion."""
 
 
 class MultiPartUpload:
+    """Handles multipart uploads to Notion for large files.
+
+    Notion requires large files to be uploaded in multiple parts. This helper
+    class manages splitting the file into fixed-size chunks and sending them
+    sequentially to Notion.
+    """
+
     api_key: str
 
     def __init__(self, api_key: str, filePath: str, fileName: str, mimeType: str):
+        """Create a multipart uploader for a local file.
+
+        Args:
+            api_key: Notion integration API key.
+            filePath: Path to the local file to upload.
+            fileName: The filename to report to Notion.
+            mimeType: The content type for the upload.
+        """
         self.api_key = api_key
         self.filePath = filePath
         self.fileName = fileName
@@ -36,6 +64,14 @@ class MultiPartUpload:
             self.chunkCount = ceil(fileSize / CHUNK_SIZE)
 
     def split(self, file: BinaryIO):
+        """Yield file chunks of size `CHUNK_SIZE`.
+
+        Args:
+            file: An open binary file object.
+
+        Yields:
+            bytes: Next chunk of the file to upload.
+        """
         while True:
             chunk = file.read(CHUNK_SIZE)
             if not chunk:
@@ -43,6 +79,11 @@ class MultiPartUpload:
             yield chunk
 
     def initiate_upload(self):
+        """Initialize a multipart upload session with Notion.
+
+        Returns:
+            The Notion upload `file_id` if successful, otherwise `None`.
+        """
         payload = {
             "filename": self.fileName,
             "content_type": self.mimeType,
@@ -72,17 +113,21 @@ class MultiPartUpload:
             return None
 
     def upload(self):
+        """Perform the multi-part upload.
+
+        Returns:
+            The Notion `file_id` on success, or `None` on failure.
+        """
         file_id = self.initiate_upload()
-        if file_id == None:
+        if file_id is None:
             return None
+
         with open(self.filePath, "rb") as file:
             for chunk in self.split(file):
                 start_time = time.time()
                 try:
                     self.current += 1
-                    files = {
-                        "file": (self.fileName, chunk, self.mimeType),
-                    }
+                    files = {"file": (self.fileName, chunk, self.mimeType)}
 
                     upload_url = (
                         f"https://api.notion.com/v1/file_uploads/{file_id}/send"
@@ -119,6 +164,13 @@ class MultiPartUpload:
 
 
 class notion_upload:
+    """Uploads a file to Notion.
+
+    Supports:
+    - `internal` files (local filesystem)
+    - `external` URLs (registered with Notion without uploading bytes)
+    - multipart uploads when files exceed Notion's single-upload limit.
+    """
 
     def __init__(
         self,
@@ -127,6 +179,14 @@ class notion_upload:
         api_key: str,
         enforce_max_size=True,
     ):
+        """Prepare a Notion upload operation.
+
+        Args:
+            file_path: Local file path or external URL.
+            file_name: Name to report to Notion.
+            api_key: Notion integration token.
+            enforce_max_size: If true, enforce Notion's 5MB single-upload limit.
+        """
 
         self.filePath = file_path
         self.fileName = file_name
@@ -162,6 +222,14 @@ class notion_upload:
             raise InvaildMIME("File Name extension and MIME type do not match")
 
     def initiate_upload(self, external=False):
+        """Start a Notion upload session.
+
+        Args:
+            external: If True, registers an external URL with Notion instead of uploading bytes.
+
+        Returns:
+            The Notion upload `file_id` on success, otherwise `None`.
+        """
         payload = {"filename": self.fileName, "content_type": self.mimeType}
         if external:
             payload["mode"] = "external_url"
@@ -191,6 +259,11 @@ class notion_upload:
             return None
 
     def singleUpload(self):
+        """Upload a file to Notion in a single request.
+
+        Returns:
+            The Notion `file_id` if the upload completed, otherwise `None`.
+        """
         file_id = self.initiate_upload()
         if file_id is None:
             return None
@@ -220,6 +293,7 @@ class notion_upload:
         return file_id
 
     def upload(self):
+        """Upload a file to Notion (internal/external/multipart as needed)."""
         if self.type == "external":
             return self.initiate_upload(external=True)
         elif self.multiPart == True:
@@ -229,7 +303,20 @@ class notion_upload:
 
 
 class bulk_upload:
+    """Batch upload multiple files to Notion.
+
+    The expected input format is:
+        {"files": [{"path": "...", "name": "..."}, ...]}
+    """
+
     def __init__(self, files: dict, api_key, enforce_max_size=True):
+        """Create a bulk uploader.
+
+        Args:
+            files: A dict containing a "files" list of dicts with "path" and "name".
+            api_key: Notion integration token.
+            enforce_max_size: If true, enforce Notion's 5MB upload limit per file.
+        """
         self.files = files.get("files", [])
         try:
             if not isinstance(self.files, list):
@@ -240,6 +327,7 @@ class bulk_upload:
         self.MaxSize = enforce_max_size
 
     def upload(self):
+        """Upload all files and return the list of Notion file IDs."""
         file_ids = []
         for file_entry in self.files:
             file_path = file_entry.get("path")
@@ -256,6 +344,7 @@ class bulk_upload:
         return file_ids
 
     def upload_generator(self):
+        """Yield Notion file IDs as each upload completes."""
         for file_entry in self.files:
             file_path = file_entry.get("path")
             file_name = file_entry.get("name")
