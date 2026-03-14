@@ -168,6 +168,34 @@ class MultiPartUpload:
             print("🌐 Upload failed due to a network error:", e)
             return None
 
+    def complete_upload(self, fileID):
+        """Complete the multipart upload by signaling to Notion.
+
+        Args:
+            fileID (str): The file ID returned from initiate_upload.
+
+        Returns:
+            bool or None: True if successful, False if status != 200, None on network error.
+        """
+        try:
+            upload_url = f"https://api.notion.com/v1/file_uploads/{fileID}/complete"
+            headers = {
+                "Authorization": f"Bearer {self.api_key}",
+                "Notion-Version": "2025-09-03",
+            }
+            response = requests.post(
+                upload_url,
+                headers=headers,
+            )
+            if response.status_code != 200:
+                print(
+                    "❌ Completion Signal failed:", response.status_code, response.text
+                )
+                return False
+            return True
+        except requests.RequestException as e:
+            print("🌐 Completion Signal failed due to a network error:", e)
+
     def upload(self):
         """Perform the multi-part upload.
 
@@ -215,7 +243,11 @@ class MultiPartUpload:
                 print(f" Actual iteration time: {time.time() - start_time:.4f} seconds")
             else:
                 print("🚀 Upload successfull File ID: " + file_id)
-                return file_id
+                print("Completing upload...")
+                if self.complete_upload(file_id) == True:
+                    return file_id
+                else:
+                    return None
         return None
 
 
